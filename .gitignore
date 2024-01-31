@@ -4,3 +4,5 @@ web_server/test/audio
 web_server/app/services/whisper/model/*
 
 *wav
+
+!__init__.py
