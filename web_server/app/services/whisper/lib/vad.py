@@ -1,17 +1,12 @@
-# import hashlib
-# import os
-# import urllib
+
 from typing import Callable, Optional, Text, Union
 
 import numpy as np
-# import pandas as pd
 import torch
 from pyannote.audio import Model
 from pyannote.audio.core.io import AudioFile
 from pyannote.audio.pipelines import VoiceActivityDetection
-from pyannote.audio.pipelines.utils import PipelineModel
 from pyannote.core import Annotation, Segment, SlidingWindowFeature
-from tqdm import tqdm
 
 
 # from .diarize import Segment as SegmentX

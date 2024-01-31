@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from web_server.app.api import ep_main
+from app.api import ep_main
 
 
 def include_route(app) -> None:

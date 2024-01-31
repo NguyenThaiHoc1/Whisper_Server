@@ -1,4 +1,4 @@
-import web_server.app.services.whisper.lib as lib_whisper
+import app.services.whisper.lib as lib_whisper
 
 from transformers import GenerationConfig
 from onnxruntime import InferenceSession
@@ -10,18 +10,20 @@ class WhisperService(object):
     whisper_processor_path = ""
     whisper_generation_path = ""
     whisper_vad_segmentation = ""
+    device = "cpu"
 
     def __init__(self, *args, **kwargs):
         generation_config = GenerationConfig.from_pretrained(self.whisper_generation_path)
         repetition_penalty = generation_config.repetition_penalty
-        sess = InferenceSession(self.onnx_path, providers=["CUDAExecutionProvider"])
+        sess = InferenceSession(self.onnx_path, providers=["CPUExecutionProvider"])
         processor = WhisperProcessor.from_pretrained(self.whisper_processor_path)
 
         self.model_whisper = lib_whisper.load_model(
             model_fp=self.whisper_vad_segmentation,
             sess=sess,
             processor=processor,
-            repetition_penalty=repetition_penalty
+            repetition_penalty=repetition_penalty,
+            device=self.device
         )
 
     def do_whisperer(self, audio_file):

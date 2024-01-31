@@ -1,16 +1,11 @@
 import os
-import warnings
-from typing import List, Union, Optional, NamedTuple
-
-# import ctranslate2
-# import faster_whisper
 import numpy as np
 import torch
 from transformers import Pipeline
 from transformers.pipelines.pt_utils import PipelineIterator
 
-from .audio import N_SAMPLES, SAMPLE_RATE, load_audio, log_mel_spectrogram
-from .vad import load_vad_model, merge_chunks
+from app.services.whisper.lib.audio import N_SAMPLES, SAMPLE_RATE, load_audio, log_mel_spectrogram
+from app.services.whisper.lib.vad import load_vad_model, merge_chunks
 
 default_asr_options = {
     "beam_size": 5,
@@ -191,8 +186,8 @@ class WhisperPipeline(Pipeline):
         return segments
 
 
-def load_model(model_fp, sess, processor, repetition_penalty):
-    vad_model = load_vad_model(torch.device('cuda'),
+def load_model(model_fp, sess, processor, repetition_penalty, device="cpu"):
+    vad_model = load_vad_model(torch.device(device),
                                model_fp=model_fp,
                                **default_vad_options)
 
