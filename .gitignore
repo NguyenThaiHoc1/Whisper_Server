@@ -6,3 +6,6 @@ web_server/app/services/whisper/model/*
 *wav
 
 !__init__.py
+
+__pycache__
+
