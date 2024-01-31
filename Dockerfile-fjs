@@ -1,0 +1,22 @@
+FROM python:3.10
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# update ca-certificate
+COPY ./web_server/cert/FUJINET_SSL_Certificate.crt /usr/local/share/ca-certificates/fujinet/FUJINET_SSL_Certificate.crt
+RUN update-ca-certificates
+ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/fujinet/FUJINET_SSL_Certificate.crt
+
+# update package linux
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6 -y
+RUN apt-get install libgomp1
+
+# install package pip
+COPY ./web_server/requirement.txt /tmp/requirement.txt
+RUN python3 -m pip install -r /tmp/requirement.txt --no-cache-dir
+
+# run server
+COPY ./web_server /app
+WORKDIR /app
+RUN chmod +x ./app/prestart.sh

@@ -1,0 +1,13 @@
+services:
+  web-service:
+    container_name:  web-server
+    build:
+      context: .
+      dockerfile: Dockerfile-fjs
+    env_file:
+      - .env
+    command: "app/prestart.sh"
+    volumes:
+      - ./server_client_face/app:/app/app
+    ports:
+      - 6007:6007
