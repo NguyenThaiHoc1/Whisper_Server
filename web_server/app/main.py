@@ -11,7 +11,7 @@ def include_route(app) -> None:
 
 
 def start_application():
-    app = FastAPI(title="Hello world", version="1.0")
+    app = FastAPI(title="Hello world 2", version="1.0")
     include_route(
         app
     )

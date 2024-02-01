@@ -13,7 +13,7 @@ async def read_file(audio_file_bytes: UploadFile) -> dict:
 
     # Save the decoded content to a file on the server
     decode_file_name = f"{uuid.uuid4().hex}_decoded_{audio_file_bytes.filename.replace(' ', '_')}"
-    decoded_file_path = f"storage/{decode_file_name}"
+    decoded_file_path = f"app/storage/{decode_file_name}"
     audio.export(decoded_file_path, format="wav")
 
     return {

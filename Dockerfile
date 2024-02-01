@@ -13,4 +13,4 @@ RUN python3 -m pip install -r /tmp/requirement.txt --no-cache-dir
 # run server
 COPY ./web_server /app
 WORKDIR /app
-RUN chmod +x ./app/prestart.sh
+RUN chmod +x ./prestart.sh
