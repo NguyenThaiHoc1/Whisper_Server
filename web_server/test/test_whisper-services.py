@@ -2,7 +2,7 @@ import time
 
 from app.services.whisper.service import WhisperService
 
-path_audio_file = '/Users/nguyenthaihoc/Desktop/FUJINET/whisper/web_server/test/audio/vi_vocals.wav'
+path_audio_file = '/Users/nguyenthaihoc/Desktop/FUJINET/whisper/web_server/test/audio/abc.MP3'
 
 # static  variable
 WhisperService.onnx_path = '../app/services/whisper/model/whisper-large-v3_beamsearch.onnx'

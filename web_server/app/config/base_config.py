@@ -16,5 +16,4 @@ class Settings(BaseSettings):
     WHIPSER_DEVICE = 'cpu'
 
 
-
 settings = Settings()
