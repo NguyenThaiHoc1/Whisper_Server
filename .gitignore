@@ -9,3 +9,4 @@ web_server/app/services/whisper/model/*
 
 __pycache__
 
+model_backup
