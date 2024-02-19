@@ -2,11 +2,15 @@
 
 web_server/test/audio
 web_server/app/services/whisper/model/*
+web_server/app/storage/*
+!web_server/app/storage/.gitkeep
 
 *wav
+*mp3
 
 !__init__.py
 
 __pycache__
 
 model_backup
+

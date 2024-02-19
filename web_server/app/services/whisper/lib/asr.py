@@ -76,6 +76,7 @@ class WhisperPipeline(Pipeline):
             sess,
             processor,
             repetition_penalty,
+            device: str,
             **kwargs
     ):
         self.tokenizer = tokenizer
@@ -86,7 +87,7 @@ class WhisperPipeline(Pipeline):
             self._sanitize_parameters(**kwargs)
         self.call_count = 0
         self.framework = "pt"
-        self.device = torch.device('cpu')
+        self.device = torch.device(str(device))
 
         super(Pipeline, self).__init__()
         self.vad_model = vad
@@ -199,5 +200,6 @@ def load_model(model_fp, sess, processor, repetition_penalty, device="cpu"):
         tokenizer=tokenizer,
         sess=sess,
         processor=processor,
-        repetition_penalty=repetition_penalty
+        repetition_penalty=repetition_penalty,
+        device=str(device),
     )
