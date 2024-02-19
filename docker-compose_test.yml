@@ -1,7 +1,7 @@
 services:
   web-service:
     container_name:  web-server-cuda
-    image: cuda-whisper:1.0
+    image: cuda-whisper:1.2
     env_file:
       - .env
     command: "/app/prestart.sh"
