@@ -53,9 +53,9 @@ async def do_speech2text(file: UploadFile = File(...), task_id: str = Form("1231
         # Do service [Whisper]
         logger.info(f"[func: do_speech2text] starting sfunc: service_whisper.do_whisperer ...")
         start_time = time.time()
-        # response_output = service_whisper.do_whisperer(
-        #     audio_file=dict_decode_file["filepath"]
-        # )
+        response_output = service_whisper.do_whisperer(
+            audio_file=dict_decode_file["filepath"]
+        )
         end_time = time.time() - start_time
         logger.info(f"[func: do_speech2text]: Do Whisper is successful. | time: {end_time}s")
         global_e_time = datetime.now()

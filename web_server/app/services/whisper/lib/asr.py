@@ -47,18 +47,33 @@ def find_numeral_symbol_tokens(tokenizer):
     return numeral_symbol_tokens
 
 
-def inference_func(features, options, sess, processor, repetition_penalty):
+def inference_func(features, options, sess, processor, repetition_penalty, device):
     batch_size = features.shape[0]
-    ort_inputs = {
-        "input_features": np.array(features, dtype=np.float32),
-        "max_length": np.array([448], dtype=np.int32),
-        "min_length": np.array([0], dtype=np.int32),
-        "num_beams": np.array([5], dtype=np.int32),
-        "num_return_sequences": np.array([1], dtype=np.int32),
-        "length_penalty": np.array([1], dtype=np.float32),
-        "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
-        "decoder_input_ids": np.array([[50258, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
-    }
+
+    if device == "cpu":
+        ort_inputs = {
+            "input_features": np.array(features, dtype=np.float32),
+            "max_length": np.array([448], dtype=np.int32),
+            "min_length": np.array([0], dtype=np.int32),
+            "num_beams": np.array([5], dtype=np.int32),
+            "num_return_sequences": np.array([1], dtype=np.int32),
+            "length_penalty": np.array([1], dtype=np.float32),
+            "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
+            "decoder_input_ids": np.array([[50258, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
+        }
+    elif device == "cuda":
+        ort_inputs = {
+            "input_features": features.cpu().numpy(),
+            "max_length": np.array([448], dtype=np.int32),
+            "min_length": np.array([0], dtype=np.int32),
+            "num_beams": np.array([5], dtype=np.int32),
+            "num_return_sequences": np.array([1], dtype=np.int32),
+            "length_penalty": np.array([1], dtype=np.float32),
+            "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
+            "decoder_input_ids": np.array([[50258, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
+        }
+    else:
+        raise ValueError("Please check device ort onnx.")
 
     out = sess.run(None, ort_inputs)[0]
     text = []
@@ -88,6 +103,7 @@ class WhisperPipeline(Pipeline):
         self.call_count = 0
         self.framework = "pt"
         self.device = torch.device(str(device))
+        self.device_str = str(device)
 
         super(Pipeline, self).__init__()
         self.vad_model = vad
@@ -122,7 +138,8 @@ class WhisperPipeline(Pipeline):
             model_inputs['inputs'], self.options,
             sess=self.sess,
             processor=self.processor,
-            repetition_penalty=self.repetition_penalty
+            repetition_penalty=self.repetition_penalty,
+            device=self.device_str
         )
         return {'text': outputs}
 
