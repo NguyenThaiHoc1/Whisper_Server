@@ -27,7 +27,7 @@ async def read_file(audio_file_bytes: UploadFile, **kwargs) -> dict:
     if extension_file == "wav":  # (assuming it's in WAV format)
         audio = AudioSegment.from_wav(io.BytesIO(content))
     elif extension_file == "mp3":  # (assuming it's in WAV format)
-        audio = AudioSegment.from_mp3(io.BytesIO(content))
+        audio = AudioSegment.from_file(io.BytesIO(content))
     else:
         raise ValueError("We can't init audio variables of file. Please check ...")
 
