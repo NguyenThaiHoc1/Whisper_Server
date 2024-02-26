@@ -59,7 +59,7 @@ def inference_func(features, options, sess, processor, repetition_penalty, devic
             "num_return_sequences": np.array([1], dtype=np.int32),
             "length_penalty": np.array([1], dtype=np.float32),
             "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
-            "decoder_input_ids": np.array([[50258, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
+            "decoder_input_ids": np.array([[50258, 50259, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
         }
     elif device == "cuda":
         ort_inputs = {
@@ -70,7 +70,7 @@ def inference_func(features, options, sess, processor, repetition_penalty, devic
             "num_return_sequences": np.array([1], dtype=np.int32),
             "length_penalty": np.array([1], dtype=np.float32),
             "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
-            "decoder_input_ids": np.array([[50258, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
+            "decoder_input_ids": np.array([[50258, 50259, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
         }
     else:
         raise ValueError("Please check device ort onnx.")

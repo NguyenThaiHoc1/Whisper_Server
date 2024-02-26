@@ -71,7 +71,8 @@ async def do_speech2text(file: UploadFile = File(...), task_id: str = Form("1231
             "file-size": dict_decode_file["size"],
             "extension": extension_file,
             "model-name": settings.WHISPER_ONNX_PATH.name,
-            "task-id": task_id
+            "task-id": task_id,
+            "output": response_output
         }
         message_error = None
 

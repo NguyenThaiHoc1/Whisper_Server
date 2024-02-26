@@ -18,8 +18,8 @@ class WhisperService(object):
     def __init__(self, *args, **kwargs):
         if self.device == "cpu":
             self._exc_provider = ["CPUExecutionProvider"]
-        elif self.device == "gpu":
-            self._exc_provider = ["CPUExecutionProvider", "CUDAExecutionProvider"]
+        elif self.device == "cuda":
+            self._exc_provider = ["CUDAExecutionProvider"]
         else:
             raise ValueError("Don't have any type device. Use cpu or cuda")
 
