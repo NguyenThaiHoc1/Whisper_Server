@@ -24,10 +24,10 @@ RUN ln -sf /usr/bin/python3.9 /usr/bin/python \
 
 
 # Set the working directory to /backend
-COPY ./web_server/requirement.txt /tmp/requirement.txt
+COPY ./web_server/requirement-gpu.txt /tmp/requirement-gpu.txt
 
 RUN pip install --upgrade pip
-RUN pip install -r /tmp/requirement.txt --no-cache-dir
+RUN pip install -r /tmp/requirement-gpu.txt --no-cache-dir
 
 # run server
 COPY ./web_server /app

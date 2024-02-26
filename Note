@@ -1,0 +1,10 @@
+# we need to package a image like
+!docker build -t cuda-whisper:1.3 -f ./Dockerfile-gpu . --platform linux/amd64
+
+# After that, we need convert name to image tag
+!docker image tag cuda-whisper:1.3 namhoc123/cuda-whisper:1.3
+
+# Now, Docker image we have a image name: namhoc123/cuda-whisper:1.3 and cuda-whisper:1.3
+# But namhoc123/cuda-whisper:1.3 to link to docker-hub (docker register of docker)
+# And we need to push to the image to docker registry that already in docker hub
+!docker push namhoc123/cuda-whisper:1.3
