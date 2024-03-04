@@ -5,6 +5,9 @@ web_server/app/services/whisper/model/*
 web_server/app/storage/*
 !web_server/app/storage/.gitkeep
 
+triton_server/models/*
+!triton_server/models/.gitkeep
+
 *wav
 *mp3
 

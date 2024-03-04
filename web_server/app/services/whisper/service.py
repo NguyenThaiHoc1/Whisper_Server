@@ -6,6 +6,9 @@ from transformers import WhisperProcessor
 
 import time
 
+# import logger
+from app.logging_utils import logger
+
 
 class WhisperService(object):
     onnx_path = ""
@@ -40,22 +43,18 @@ class WhisperService(object):
 
     def do_whisperer(self, audio_file):
         start_time = time.time()
-        print("Processing file audio ...")
-        print(f"start-time: {start_time}.")
+        logger.info("[service: do_whisperer] Processing file audio ...")
         audio = lib_whisper.load_audio(
             audio_file
         )
         end_time = time.time() - start_time
-        print(f"end-time: {end_time}.")
-        print("Processing file audio is done.")
+        logger.info(f"[service: do_whisperer]: Processing file audio is done. | time: {end_time}s")
 
         start_time = time.time()
-        print("Processing model ...")
-        print(f"start-time: {start_time}.")
+        logger.info("[service: do_whisperer] Processing model ...")
         data = self.model_whisper.transcribe(
             audio, batch_size=1
         )
         end_time = time.time() - start_time
-        print(f"end-time: {end_time}.")
-        print("Processing model is done.")
+        logger.info(f"[service: do_whisperer]: Processing model is done. | time: {end_time}s")
         return data

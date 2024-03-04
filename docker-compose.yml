@@ -11,3 +11,14 @@ services:
       - ./web_server/app:/app/app
     ports:
       - 6007:6007
+
+  triton-server:
+    image: nvcr.io/nvidia/tritonserver:23.10-py3
+    container_name: ai-platform-triton-server
+    volumes:
+      - ./triton_server/models:/models
+    command: "tritonserver --model-repository=/models"
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
