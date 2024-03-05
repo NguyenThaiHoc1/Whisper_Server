@@ -204,7 +204,7 @@ class WhisperPipeline(Pipeline):
         return segments
 
 
-def load_model(model_fp, sess, processor, repetition_penalty, device="cpu"):
+def load_model(model_fp, sess, processor, repetition_penalty, device):
     vad_model = load_vad_model(torch.device(device),
                                model_fp=model_fp,
                                **default_vad_options)

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     STORAGE_PATH: Union[str, os.PathLike] = None
 
     # [Triton-server] setting up
-    TRITON_SERVICES_URL: str = "localhost"
+    TRITON_SERVICES_URL: str = "triton-server"
     TRITON_SERVICES_PROTOCOL: str = "grpc"
 
     # [CORE] - Whisper

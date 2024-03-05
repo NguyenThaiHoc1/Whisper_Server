@@ -53,7 +53,7 @@ class HTDECMuscSplitVoice(object):
         # 3: Create folder
         output_abs_path = utils_audio.create_directory(
             directory_name=str(dict_decode_file["filename_no_ext"]),
-            base_path='bussiness/htdecmus_split_voice/saved_template'
+            base_path='app/bussiness/htdecmus_split_voice/saved_template'
         )
 
         logger.info(f"{output_abs_path}")
