@@ -1,0 +1,26 @@
+name: "htdecmus"
+platform: "pytorch_libtorch"
+max_batch_size : 0
+
+input [
+  {
+    name: "mix.1"
+    data_type: TYPE_FP32
+    dims: [ -1, -1 , -1]
+  }
+]
+output [
+  {
+    name: "549"
+    data_type: TYPE_FP32
+    dims: [-1, -1, -1, -1]
+  }
+]
+
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_CPU
+  }
+]
