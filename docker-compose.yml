@@ -1,6 +1,6 @@
 services:
   web-service:
-    container_name:  web-server
+    container_name: web-server
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,6 +11,19 @@ services:
       - ./web_server/app:/app/app
     ports:
       - 6007:6007
+
+  web-service-translate:
+    container_name: web-server-translate
+    build:
+      context: ./web_server_translate
+      dockerfile: Dockerfile-fjs
+    env_file:
+      - .env-translate
+    command: "/app/prestart.sh"
+    volumes:
+      - ./web_server_translate/app:/app/app
+    ports:
+      - 6008:6008
 
   triton-server:
     image: nvcr.io/nvidia/tritonserver:23.10-py3

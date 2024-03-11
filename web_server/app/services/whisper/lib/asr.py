@@ -79,6 +79,7 @@ def inference_func(features, options, sess, processor, repetition_penalty, devic
     text = []
     for s in out:
         text.append(processor.batch_decode(s, skip_special_tokens=True))
+    torch.cuda.empty_cache()
     return text
 
 

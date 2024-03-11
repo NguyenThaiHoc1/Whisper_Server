@@ -53,7 +53,7 @@ class WhisperService(object):
         start_time = time.time()
         logger.info("[service: do_whisperer] Processing model ...")
         data = self.model_whisper.transcribe(
-            audio, batch_size=1
+            audio, batch_size=2
         )
         end_time = time.time() - start_time
         logger.info(f"[service: do_whisperer]: Processing model is done. | time: {end_time}s")
