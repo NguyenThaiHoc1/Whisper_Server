@@ -8,6 +8,7 @@ from app.config.base_config import settings
 
 model_translator = MBartModel(
     model_path=settings.TRANSLATOR_ONNX_PATH,
+    tokenizer_path=settings.TRANSLATOR_TOKEN_PATH,
     device=settings.TRANSLATOR_DEVICE
 )
 

@@ -5,19 +5,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 # update ca-certificate
 #COPY ./cert/FUJINET_SSL_Certificate.crt /usr/local/share/ca-certificates/fujinet/FUJINET_SSL_Certificate.crt
 #RUN update-ca-certificates
-#ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/fujinet/FUJINET_SSL_Certificate.crt
-
-# update package linux
-RUN apt-get update
-RUN apt-get install ffmpeg libsm6 libxext6 -y
-RUN apt-get install libgomp1
+#ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/fujinet/FUJINET_SSL_Certificate.crt --no-cache-dir
 
 # install package pip
 COPY ./requirement.txt /tmp/requirement.txt
-#COPY ./installed_package /tmp
+COPY ./installed_package /tmp
 
-RUN python3 -m pip install -r /tmp/requirement.txt --no-cache-dir
-#RUN python3 -m pip install /tmp/mac/onnxruntime-1.17.0-cp310-cp310-arm.whl --no-cache-dir
+RUN python3 -m pip install -r /tmp/requirement.txt
+RUN python3 -m pip install /tmp/linux/onnxruntime-1.18.0-cp310-cp310-macosx_11_0_universal2.whl --no-cache-dir
 
 # run server
 COPY ./ /app

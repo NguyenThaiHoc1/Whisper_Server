@@ -21,7 +21,7 @@ router = APIRouter()
              status_code=200,
              include_in_schema=True,
              response_model=dict)
-async def do_speech2text(text: str = Form(...), src_lang: str = Form(...), tgt_lang: str = Form(...)) -> Dict:
+async def do_translate(text: str = Form(...), src_lang: str = Form(...), tgt_lang: str = Form(...)) -> Dict:
     try:
         # calling bussiness
         out = bus_translate.do_bus(

@@ -6,7 +6,7 @@ from onnxruntime import InferenceSession
 
 class MBartModel(object):
 
-    def __init__(self, model_path, device, *args, **kwargs):
+    def __init__(self, model_path, tokenizer_path, device, *args, **kwargs):
 
         # saving parameters
         self.model_path = model_path
@@ -21,6 +21,7 @@ class MBartModel(object):
 
         assert len(self._exc_provider) > 0, "Please type of device ..."
 
+        # Token path: 'facebook/mbart-large-50-many-to-many-mmt'
         self.tokenizer = MBart50TokenizerFast.from_pretrained('facebook/mbart-large-50-many-to-many-mmt')
         self.sess = InferenceSession(self.model_path, providers=self._exc_provider)
 
@@ -61,6 +62,6 @@ class MBartModel(object):
         # process ouput
         trans_texts = []
         for out_ids in out[0]:
-            trans_text = self.tokenizer.batch_decode(out_ids, skip_specical_tokens=True)
+            trans_text = self.tokenizer.batch_decode(out_ids, skip_special_tokens=True)
             trans_texts.append(trans_text)
         return trans_texts
