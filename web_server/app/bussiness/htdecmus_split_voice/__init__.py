@@ -8,7 +8,7 @@ from app.bussiness.htdecmus_split_voice.htdecmus_pack import Separator, ProcessI
 from app.services import service_htdecmus
 
 # init
-pro_inp = ProcessInput(num_workers=8)
+pro_inp = ProcessInput(num_workers=1)
 
 separator = Separator(device=settings.TRITON_HTDECMUS_SERVICES_DEVICE, overlap=0.25,
                       model_service=service_htdecmus, process_input_class=pro_inp)

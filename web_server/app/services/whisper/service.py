@@ -31,6 +31,7 @@ class WhisperService(object):
         generation_config = GenerationConfig.from_pretrained(self.whisper_generation_path)
         repetition_penalty = generation_config.repetition_penalty
         sess = InferenceSession(self.onnx_path, providers=self._exc_provider)
+
         processor = WhisperProcessor.from_pretrained(self.whisper_processor_path)
 
         self.model_whisper = lib_whisper.load_model(
@@ -40,6 +41,24 @@ class WhisperService(object):
             repetition_penalty=repetition_penalty,
             device=self.device
         )
+
+    def do_detection_language(self, audio_file):
+        start_time = time.time()
+        logger.info("[service: do_whisperer] Processing file audio ...")
+        audio = lib_whisper.load_audio(
+            audio_file
+        )
+        end_time = time.time() - start_time
+        logger.info(f"[service: do_whisperer]: Processing file audio is done. | time: {end_time}s")
+
+        start_time = time.time()
+        logger.info("[service: do_whisperer] Processing model ...")
+        data = self.model_whisper.detect_language(
+            audio, batch_size=2
+        )
+        end_time = time.time() - start_time
+        logger.info(f"[service: do_whisperer]: Processing model is done. | time: {end_time}s")
+        return data
 
     def do_whisperer(self, audio_file):
         start_time = time.time()

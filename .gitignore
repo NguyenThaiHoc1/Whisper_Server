@@ -8,12 +8,16 @@ web_server/app/storage/*
 !web_server_translate/app/services/translate/model/architecture/.gitkeep
 web_server_translate/installed_package/mac
 
-
-!triton_server/models/.gitkeep
-!triton_server/models/htdecmus/config.pbtxt
 triton_server/models/htdecmus/1
 
+!triton_server/models/htdecmus/config.pbtxt
+!triton_server/models/htdecmus/1/.gitkeep
 
+!triton_server/models/speechverfify/config.pbtxt
+!triton_server/models/speechverfify/1/.gitkeep
+
+
+*.pt
 *onnx
 *onnx_data
 *wav

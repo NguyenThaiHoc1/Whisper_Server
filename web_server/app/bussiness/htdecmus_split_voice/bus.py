@@ -30,16 +30,16 @@ class HTDECMuscSplitVoice(object):
         global_s_time = datetime.now()
 
         # 1: Read extension
-        logger.info(f"[func: do_speech2text] starting sfunc: get_extension_file ...")
+        logger.info(f"[func: do_htdecmus] starting sfunc: get_extension_file ...")
         start_time = time.time()
         filename, extension_file = utils_audio.get_extension_file(
             file.filename
         )
         end_time = time.time() - start_time
-        logger.info(f"[func: do_speech2text]: '{filename}' '{extension_file}' | time: {end_time}s")
+        logger.info(f"[func: do_htdecmus]: '{filename}' '{extension_file}' | time: {end_time}s")
 
         # 2: Decode file
-        logger.info(f"[func: do_speech2text] starting sfunc: utils_audio.read_file ...")
+        logger.info(f"[func: do_htdecmus] starting sfunc: utils_audio.read_file ...")
         start_time = time.time()
         dict_decode_file = await utils_audio.read_file(
             audio_file_bytes=file,
@@ -48,7 +48,7 @@ class HTDECMuscSplitVoice(object):
             filename=filename
         )
         end_time = time.time() - start_time
-        logger.info(f"[func: do_speech2text]: Decode file path is successful. | time: {end_time}s")
+        logger.info(f"[func: do_htdecmus]: Decode file path is successful. | time: {end_time}s")
 
         # 3: Create folder
         output_abs_path = utils_audio.create_directory(

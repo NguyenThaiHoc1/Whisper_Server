@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # from pydantic import BaseSettings
-from pydantic.v1 import BaseSettings
+from pydantic import BaseSettings
 
 from typing import Union, List
 
@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     STORAGE_PATH: Union[str, os.PathLike] = None
 
     # [Triton-server] setting up
-    TRITON_SERVICES_URL: str = "triton-server"
-    TRITON_SERVICES_PROTOCOL: str = "grpc"
+    TRITON_SERVICES_URL: str = "localhost"
+    TRITON_SERVICES_PROTOCOL: str = "http"
 
     # [CORE] - Whisper
     WHISPER_ONNX_PATH: Union[str, os.PathLike] = WHISPER_SERVICES_MODEL_LIB / "whisper-large-v3_beamsearch.onnx"
@@ -35,6 +35,14 @@ class Settings(BaseSettings):
     TRITON_HTDECMUS_SERVICES_MODEL_NAME: str = "htdecmus"
     TRITON_HTDECMUS_SERVICES_VERSION: str = "1"
     TRITON_HTDECMUS_SERVICES_DEVICE: str = "cpu"
+
+    # [CORE] - VOICE VERIFY
+    TRITON_VERIFIER_SERVICES_INPUTS_NAME: List[str] = ["audio_signal", "length"]
+    TRITON_VERIFIER_SERVICES_OUTPUTS_NAME: List[str] = ["logits", "embs"]
+    TRITON_VERIFIER_SERVICES_MODEL_NAME: str = "speechverfify"
+    TRITON_VERIFIER_SERVICES_VERSION: str = "1"
+    TRITON_VERIFIER_SERVICES_DEVICE: str = "cpu"
+
 
     # [CONFIG-FRAMEWORK] - pydub
     PYFUB_AUDIOSEGMENT: str = "/opt/homebrew/Cellar/ffmpeg/6.1.1_2/bin/ffmpeg"  # for macbook

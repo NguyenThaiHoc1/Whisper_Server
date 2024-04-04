@@ -1,0 +1,44 @@
+name: "speechverfify"
+platform: "pytorch_libtorch"
+max_batch_size: 1
+
+input [
+  {
+    name: "audio_signal"
+    data_type: TYPE_FP32
+    dims: [ 80 , -1]
+  },
+  {
+    name: "length"
+    data_type: TYPE_FP32
+    dims: [ 1 ]
+    reshape: { shape: [ ] }
+
+  }
+]
+output [
+  {
+    name: "logits"
+    data_type: TYPE_FP32
+    dims: [ -1 ]
+  },
+  {
+    name: "embs"
+    data_type: TYPE_FP32
+    dims: [ -1 ]
+  }
+]
+
+
+instance_group [
+  {
+    count: 3
+    kind: KIND_CPU
+  }
+]
+
+dynamic_batching {
+  preferred_batch_size: [1]
+  max_queue_delay_microseconds: 1
+  preserve_ordering: true
+}

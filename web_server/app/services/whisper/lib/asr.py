@@ -47,39 +47,77 @@ def find_numeral_symbol_tokens(tokenizer):
     return numeral_symbol_tokens
 
 
-def inference_func(features, options, sess, processor, repetition_penalty, device):
+def inference_func(features, options, sess, processor, repetition_penalty, device, task):
     batch_size = features.shape[0]
 
-    if device == "cpu":
-        ort_inputs = {
-            "input_features": np.array(features, dtype=np.float32),
-            "max_length": np.array([448], dtype=np.int32),
-            "min_length": np.array([0], dtype=np.int32),
-            "num_beams": np.array([5], dtype=np.int32),
-            "num_return_sequences": np.array([1], dtype=np.int32),
-            "length_penalty": np.array([1], dtype=np.float32),
-            "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
-            "decoder_input_ids": np.array([[50258, 50259, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
-        }
-    elif device == "cuda":
-        ort_inputs = {
-            "input_features": features.cpu().numpy(),
-            "max_length": np.array([448], dtype=np.int32),
-            "min_length": np.array([0], dtype=np.int32),
-            "num_beams": np.array([5], dtype=np.int32),
-            "num_return_sequences": np.array([1], dtype=np.int32),
-            "length_penalty": np.array([1], dtype=np.float32),
-            "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
-            "decoder_input_ids": np.array([[50258, 50259, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
-        }
+    if task == "speech2text":
+        if device == "cpu":
+            ort_inputs = {
+                "input_features": np.array(features, dtype=np.float32),
+                "max_length": np.array([448], dtype=np.int32),
+                "min_length": np.array([0], dtype=np.int32),
+                "num_beams": np.array([5], dtype=np.int32),
+                "num_return_sequences": np.array([1], dtype=np.int32),
+                "length_penalty": np.array([1], dtype=np.float32),
+                "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
+                "decoder_input_ids": np.array([[50258, 50259, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
+            }
+        elif device == "cuda":
+            ort_inputs = {
+                "input_features": features.cpu().numpy(),
+                "max_length": np.array([448], dtype=np.int32),
+                "min_length": np.array([0], dtype=np.int32),
+                "num_beams": np.array([5], dtype=np.int32),
+                "num_return_sequences": np.array([1], dtype=np.int32),
+                "length_penalty": np.array([1], dtype=np.float32),
+                "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
+                "decoder_input_ids": np.array([[50258, 50259, 50278, 50360, 50364]] * batch_size, dtype=np.int32),
+            }
+        else:
+            raise ValueError("Please check device ort onnx.")
+    elif task == "detect":
+        if device == "cpu":
+            ort_inputs = {
+                "input_features": np.array(features, dtype=np.float32),
+                "max_length": np.array([3], dtype=np.int32),
+                "min_length": np.array([0], dtype=np.int32),
+                "num_beams": np.array([1], dtype=np.int32),
+                "num_return_sequences": np.array([1], dtype=np.int32),
+                "length_penalty": np.array([1], dtype=np.float32),
+                "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
+                "decoder_input_ids": np.array([[50258]] * batch_size, dtype=np.int32),
+            }
+        elif device == "cuda":
+            ort_inputs = {
+                "input_features": features.cpu().numpy(),
+                "max_length": np.array([3], dtype=np.int32),
+                "min_length": np.array([0], dtype=np.int32),
+                "num_beams": np.array([1], dtype=np.int32),
+                "num_return_sequences": np.array([1], dtype=np.int32),
+                "length_penalty": np.array([1], dtype=np.float32),
+                "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
+                "decoder_input_ids": np.array([[50258]] * batch_size, dtype=np.int32),
+            }
+        else:
+            raise ValueError("Please check device ort onnx.")
     else:
-        raise ValueError("Please check device ort onnx.")
+        raise ValueError("Please check task")
 
-    out = sess.run(None, ort_inputs)[0]
-    text = []
-    for s in out:
-        text.append(processor.batch_decode(s, skip_special_tokens=True))
-    torch.cuda.empty_cache()
+    if task == "detect":
+        out = sess.run(None, ort_inputs)[0]
+        text = []
+        for s in out:
+            code_language = processor.batch_decode(s[:, 1], skip_special_tokens=False)[0].split("<|")[-1].split("|>")[0]
+            text.append(code_language)
+        torch.cuda.empty_cache()
+    elif task == "speech2text":
+        out = sess.run(None, ort_inputs)[0]
+        text = []
+        for s in out:
+            text.append(processor.batch_decode(s, skip_special_tokens=True))
+        torch.cuda.empty_cache()
+    else:
+        raise ValueError("Please check type of task.")
     return text
 
 
@@ -99,8 +137,7 @@ class WhisperPipeline(Pipeline):
         self.options = options
         self._batch_size = kwargs.pop("batch_size", None)
         self._num_workers = 1
-        self._preprocess_params, self._forward_params, self._postprocess_params = \
-            self._sanitize_parameters(**kwargs)
+        self._preprocess_params, self._forward_params, self._postprocess_params = self._sanitize_parameters(**kwargs)
         self.call_count = 0
         self.framework = "pt"
         self.device = torch.device(str(device))
@@ -117,6 +154,7 @@ class WhisperPipeline(Pipeline):
         self.sess = sess
         self.processor = processor
         self.repetition_penalty = repetition_penalty
+        self.task = None
 
     def _sanitize_parameters(self, **kwargs):
         preprocess_kwargs = {}
@@ -140,7 +178,8 @@ class WhisperPipeline(Pipeline):
             sess=self.sess,
             processor=self.processor,
             repetition_penalty=self.repetition_penalty,
-            device=self.device_str
+            device=self.device_str,
+            task=self.task
         )
         return {'text': outputs}
 
@@ -162,19 +201,21 @@ class WhisperPipeline(Pipeline):
         def stack(items):
             return {'inputs': torch.stack([x['inputs'] for x in items])}
 
-        dataloader = torch.utils.data.DataLoader(dataset, num_workers=num_workers, batch_size=batch_size,
+        dataloader = torch.utils.data.DataLoader(dataset, num_workers=num_workers,
+                                                 batch_size=batch_size,
                                                  collate_fn=stack)
         model_iterator = PipelineIterator(dataloader, self.forward, forward_params, loader_batch_size=batch_size)
         final_iterator = PipelineIterator(model_iterator, self.postprocess, postprocess_params)
         return final_iterator
 
-    def transcribe(
+    def detect_language(
             self,
             audio,
             batch_size=4,
             chunk_size=30,
-
     ):
+        self.task = "detect"
+
         def data(audio, segments):
             for seg in segments:
                 f1 = int(seg['start'] * SAMPLE_RATE)
@@ -193,7 +234,49 @@ class WhisperPipeline(Pipeline):
         segments = []
         total_segments = len(vad_segments)
         for idx, out in enumerate(self.__call__(
-                data(audio, vad_segments), batch_size=batch_size, num_workers=0)):
+                data(audio, vad_segments),
+                batch_size=batch_size,
+                num_workers=0)):
+            text = out['text']
+            if batch_size in [0, 1, None]:
+                text = text[0]
+            segments.append({
+                "language": text,
+                "start": round(vad_segments[idx]['start'], 3),
+                "end": round(vad_segments[idx]['end'], 3)
+            })
+        return segments
+
+    def transcribe(
+            self,
+            audio,
+            batch_size=4,
+            chunk_size=30,
+
+    ):
+        self.task = "speech2text"
+
+        def data(audio, segments):
+            for seg in segments:
+                f1 = int(seg['start'] * SAMPLE_RATE)
+                f2 = int(seg['end'] * SAMPLE_RATE)
+                yield {'inputs': audio[f1:f2]}
+
+        vad_segments = self.vad_model(
+            {"waveform": torch.from_numpy(audio).unsqueeze(0), "sample_rate": SAMPLE_RATE})
+        vad_segments = merge_chunks(
+            vad_segments,
+            chunk_size,
+            onset=self._vad_params["vad_onset"],
+            offset=self._vad_params["vad_offset"],
+        )
+
+        segments = []
+        total_segments = len(vad_segments)
+        for idx, out in enumerate(self.__call__(
+                data(audio, vad_segments),
+                batch_size=batch_size,
+                num_workers=0)):
             text = out['text']
             if batch_size in [0, 1, None]:
                 text = text[0]

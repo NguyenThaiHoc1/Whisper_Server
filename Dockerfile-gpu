@@ -1,35 +1,25 @@
 # Use an official NVIDIA CUDA runtime as a parent image
-FROM nvidia/cuda:11.4.3-cudnn8-devel-ubuntu20.04
-
-# Set environment variables
-ENV PYTHONUNBUFFERED 1
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install Python and pip
-RUN apt-get update && apt-get install -y \
-     python3.9 \
-     python3-pip \
-     && rm -rf /var/lib/apt/lists/*
-
-# Install
-RUN apt-get update
-RUN apt-get install ffmpeg libsm6 libxext6 -y
-RUN apt-get install libgomp1
-
-# Create symbolic links for Python and pip
-RUN ln -sf /usr/bin/python3.9 /usr/bin/python \
-     && ln -sf /usr/bin/python3.9 /usr/bin/python3 \
-     && ln -sf /usr/bin/pip3 /usr/bin/pip
+# FROM nvidia/cuda:11.4.3-cudnn8-devel-ubuntu20.04
+# FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
+#FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-base-ubuntu20.04
 
 
 
-# Set the working directory to /backend
-COPY ./web_server/requirement-gpu.txt /tmp/requirement-gpu.txt
-
-RUN pip install --upgrade pip
-RUN pip install -r /tmp/requirement-gpu.txt --no-cache-dir
-
-# run server
-COPY ./web_server /app
 WORKDIR /app
-RUN chmod +x ./prestart.sh
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y software-properties-common && \
+    DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:deadsnakes/ppa && \
+    apt-get install -y python3.10 curl && \
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
+
+RUN curl -sSL https://install.python-poetry.org | python3.10 - --preview
+RUN pip3 install --upgrade requests
+RUN ln -fs /usr/bin/python3.10 /usr/bin/python
+
+
+#COPY ./web_server_translate/requirement.txt /tmp/requirement.txt
+#
+#RUN pip install --upgrade pip
+#RUN pip install -r /tmp/requirement.txt --no-cache-dir

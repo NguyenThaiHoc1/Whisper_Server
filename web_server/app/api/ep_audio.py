@@ -4,8 +4,12 @@ from fastapi import APIRouter, HTTPException, File, UploadFile, Form, Response
 from fastapi.responses import FileResponse, JSONResponse
 
 # Bussiness
-from app.bussiness import bussiness_speech2text
-from app.bussiness import bussiness_htdecmus
+from app.bussiness import (
+    bussiness_speech2text,
+    bussiness_htdecmus,
+    bussiness_speechverify,
+    bussiness_detectionlanguage
+)
 
 # Schema
 from app.schema.sch_audio import AudioUpload
@@ -99,3 +103,79 @@ async def do_speech2text(file: UploadFile = File(...), task_id: str = Form("1231
         "result": result,
         "message_error": message_error
     }
+
+@router.post('/detection-language',
+             description='do speech audio compile to text',
+             status_code=200,
+             include_in_schema=True,
+             response_model=dict)
+async def do_detectlanguage(file: UploadFile = File(...), task_id: str = Form("123123123")) -> Dict:
+    try:
+        # calling bussiness
+        outputs_dict = await bussiness_detectionlanguage(
+            file=file
+        )
+
+        # add task_id for task
+        outputs_dict["task_id"] = task_id
+
+        # response
+        status_code = 200
+        result = outputs_dict
+        message_error = None
+
+    except ValueError as e:
+        logger.error(
+            f"[func: do_speech2text] {400}: {str(e)}"
+        )
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.critical(
+            f"[func: do_speech2text] {500}: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {
+        "status_code": status_code,
+        "result": result,
+        "message_error": message_error
+    }
+
+@router.post('/speechverify',
+             description='do verify voice',
+             status_code=200,
+             include_in_schema=True,
+             response_model=dict)
+async def do_verify_voice(file: UploadFile = File(...), task_id: str = Form("123123123")) -> Dict:
+    try:
+        # calling bussiness
+        outputs_dict = await bussiness_speechverify(
+            file=file
+        )
+
+        # add task_id for task
+        outputs_dict["task_id"] = task_id
+
+        # response
+        status_code = 200
+        result = outputs_dict
+        message_error = None
+
+    except ValueError as e:
+        logger.error(
+            f"[func: do_verify_voice] {400}: {str(e)}"
+        )
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.critical(
+            f"[func: do_verify_voice] {500}: {str(e)}"
+        )
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {
+        "status_code": status_code,
+        "result": result,
+        "message_error": message_error
+    }
+
+

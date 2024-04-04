@@ -1,16 +1,17 @@
-from app.services.triton.inference.infer_htdecmus import TritonHTDecmus
+import numpy as np
+
+from app.services.triton.inference.infer_verifyspeech import TitaNet
 import torch
 
 # import logger
-from app.logging_utils import logger
 
 
-class HTDecmusServices(object):
+class TitaNetServices(object):
 
     def __init__(self, input_name, output_name, model_name, model_version, triton_protocol):
         self.triton_protocol = triton_protocol
 
-        self.triton_client = TritonHTDecmus(
+        self.triton_client = TitaNet(
             input_name=input_name,
             output_name=output_name,
             model_name=model_name,
@@ -18,17 +19,21 @@ class HTDecmusServices(object):
             triton_protocol=triton_protocol
         )
 
-    def do_htdecmus(self, torch_tensor):
+    def do_titanet(self, processed_signal, processed_signal_len):
         # Reprocessing
-        dummy_input = torch.randn(1, 2, 343980).float().numpy()
+        # dummy_audio_signal = torch.randn(2, 80, 1008).float().numpy()
+        # dummy_length = torch.randn(2).float().numpy()
 
-        logger.info("[service: do_htdecmus] HTdecmus service is running ...")
+        np_processed_signal = processed_signal.float().numpy()
+        np_processed_signal_len = processed_signal_len.float().numpy()[:, np.newaxis]
+
         input_batch = [
-            torch_tensor.numpy(),
+            np_processed_signal,
+            np_processed_signal_len
         ]
-
         input_shape = [
-            torch_tensor.shape
+            np_processed_signal.shape,
+            np_processed_signal_len.shape
         ]
 
         # Sending request to triton server
@@ -43,6 +48,12 @@ class HTDecmusServices(object):
         else:
             raise ValueError(f'Invalid Triton protocol "{self.triton_protocol}", only accept http and grpc')
 
-        logger.info("[service: do_htdecmus] HTdecmus service is completed.")
         # Postprocessing
-        return response_out
+        logits = torch.from_numpy(
+            response_out[0],
+        )
+
+        embs = torch.from_numpy(
+            response_out[0],
+        )
+        return logits, embs

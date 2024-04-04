@@ -19,3 +19,5 @@ class TranslateService(object):
         end_time = time.time() - start_time
         logger.info(f"[service: do_service]: Processing model is done. | time: {end_time}s")
         return out
+
+    def do_service_intermi(self):

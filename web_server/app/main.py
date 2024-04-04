@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import ep_main
+from gevent import monkey
 
 
 def include_route(app) -> None:
@@ -27,3 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+if __name__ == '__main__':
+    monkey.patch_all()

@@ -18,3 +18,11 @@ model_whisper = lib_whisper.load_model(
     processor=processor,
     repetition_penalty=repetition_penalty
 )
+
+
+import onnxruntime
+
+from onnxruntime import RunOptions
+
+hello = RunOptions()
+hello.add_run_config_entry("memory.enable_memory_arena_shrinkage", "cpu:0;gpu:0")
